@@ -9,12 +9,9 @@ module.exports = db.sequelize.define(
             primaryKey: true,
             autoIncrement: true
         },
-        creator_id: {
-            type: Sequelize.INTEGER
-        },
         created_date: {
             type: Sequelize.DATEONLY,
-            defaultValue: Sequelize.NOW,
+            defaultValue: Sequelize.NOW
         },
         customer_name: {
             type: Sequelize.STRING
@@ -32,7 +29,11 @@ module.exports = db.sequelize.define(
             type: Sequelize.STRING,
         },
         deadline: {
-            type: Sequelize.STRING,
+            type: Sequelize.DATEONLY,
+        },
+        discount: {
+            type: Sequelize.FLOAT,
+            defaultValue: 0
         },
         pickup_location: {
             type: Sequelize.STRING,
@@ -42,15 +43,6 @@ module.exports = db.sequelize.define(
         },
         delivery_address: {
             type: Sequelize.STRING,
-        },
-        discount_type: {
-            type: Sequelize.STRING,
-        },
-        discount_value: {
-            type: Sequelize.FLOAT,
-        },
-        total_amount: {
-            type: Sequelize.FLOAT,
         },
         payment_status: {
             type: Sequelize.TINYINT,
