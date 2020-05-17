@@ -9,11 +9,8 @@ module.exports = db.sequelize.define(
             primaryKey: true,
             autoIncrement: true
         },
-        order_identifier: {
+        product_id: {
             type: Sequelize.INTEGER
-        },
-        item_name: {
-            type: Sequelize.STRING
         },
         unit_price: {
             type: Sequelize.FLOAT
@@ -21,8 +18,8 @@ module.exports = db.sequelize.define(
         quantity: {
             type: Sequelize.INTEGER
         },
-        total_price: {
-            type: Sequelize.FLOAT
+        order_id: {
+            type: Sequelize.INTEGER
         },
     },
     {

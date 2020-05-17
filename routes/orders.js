@@ -7,9 +7,8 @@ router.use(cors())
 const mysql = require("mysql");
 const Helpers = require("../utils/helpers");
 
-const ordersModel = require("../models/orders")
-
-
+const ordersModel = require("../models/orders");
+const orderDetailModel = require("../models/order_detail");
 
 const con = mysql.createPool({
     host: "localhost",
@@ -20,7 +19,7 @@ const con = mysql.createPool({
 
 router.get("/", function (req, res) {
     try {
-        con.query("SELECT * FROM `orders` WHERE `deadline`=?", [req.body.deadline], function (error, results, fields) {
+        con.query("SELECT * FROM `orders` WHERE `date_ordered`=?", [req.body.deadline], function (error, results, fields) {
            if (error) throw error;
            res.status(200).send(JSON.stringify(Helpers.fromUnderScoreToCamelCase(results)));
         });
@@ -31,10 +30,10 @@ router.get("/", function (req, res) {
 });
 
 router.post('/', (req, res) => {
-    const currentDate =  new Date().toJSON();
     const { customerName, contactNumber, email, facebook, instagram, deadline,
         pickupLocation, deliveryMethod, deliveryAddress, paymentStatus, paymentOption,
-        request, specialOffer, discountType, discountAmount, dateOrdered, pickupDate } = req.body;
+        request, specialOffer, discountType, discountAmount, dateOrdered, pickupDate,
+        orders } = req.body;
 
     const newRecord = {
         customer_name: customerName,
@@ -56,7 +55,18 @@ router.post('/', (req, res) => {
     };
 
     ordersModel.create(newRecord)
-        .then(() => res.status(200).send("ORDER SUCCESSFULLY ADDED"))
+        .then((savedRecord) => {
+            orders.map(order => {
+                orderDetailModel.create({
+                    order_id: savedRecord.identifier,
+                    unit_price: order.price,
+                    product_id: order.productId,
+                    quantity: order.quantity
+                });
+            })
+
+            res.status(200).send("ORDER SUCCESSFULLY ADDED");
+        })
         .catch(() => res.status(500).send("ERROR OCCURED WHILE SAVING ORDERS"))
 });
 
