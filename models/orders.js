@@ -28,10 +28,16 @@ module.exports = db.sequelize.define(
         instagram: {
             type: Sequelize.STRING,
         },
-        deadline: {
+        date_ordered: {
             type: Sequelize.DATEONLY,
         },
-        discount: {
+        pickup_date: {
+            type: Sequelize.DATEONLY,
+        },
+        discount_type: {
+            type: Sequelize.TINYINT,
+        },
+        discount_amount: {
             type: Sequelize.FLOAT,
             defaultValue: 0
         },
@@ -42,6 +48,9 @@ module.exports = db.sequelize.define(
             type: Sequelize.STRING,
         },
         delivery_address: {
+            type: Sequelize.STRING,
+        },
+        payment_option: {
             type: Sequelize.STRING,
         },
         payment_status: {

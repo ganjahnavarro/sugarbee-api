@@ -33,19 +33,23 @@ router.get("/", function (req, res) {
 router.post('/', (req, res) => {
     const currentDate =  new Date().toJSON();
     const { customerName, contactNumber, email, facebook, instagram, deadline,
-        pickupLocation, deliveryMethod, deliveryAddress, paymentStatus,
-        request, specialOffer } = req.body;
+        pickupLocation, deliveryMethod, deliveryAddress, paymentStatus, paymentOption,
+        request, specialOffer, discountType, discountAmount, dateOrdered, pickupDate } = req.body;
 
     const newRecord = {
         customer_name: customerName,
         contact_number: contactNumber,
+        discount_type: discountType,
+        discount_amount: discountAmount,
         email: email,
         facebook: facebook,
         instagram: instagram,
-        deadline: currentDate, // TODO
+        date_ordered: dateOrdered,
+        pickup_date: pickupDate,
         pickup_location: pickupLocation,
         delivery_method: deliveryMethod,
         delivery_address: deliveryAddress,
+        payment_option: paymentOption,
         payment_status: paymentStatus,
         request: request,
         special_offer: specialOffer
