@@ -1,11 +1,13 @@
 const express =  require("express")
-const users = express.Router()
 const cors = require("cors")
 const jwt = require("jsonwebtoken")
 const bcrypt = require("bcrypt")
 
-const userm = require("../models/usersm")
-users.use(cors())
+const users = express.Router()
+users.use(cors());
+
+const usersModel = require("../models/users");
+
 
 process.env.SECRET_KEY = 'secret'
 
@@ -19,7 +21,7 @@ users.post('/register', (req, res) => {
         created: today,
     }
 
-    userm.findOne({
+    usersModel.findOne({
         where: {
             username: req.body.username
         }
@@ -28,7 +30,7 @@ users.post('/register', (req, res) => {
         if(!user) {
             bcrypt.hash(req.body.password, 10, (err, hash) => {
                 userData.password = hash
-                userm.create(userData)
+                usersModel.create(userData)
                 .then(user => {
                     res.json({status: user.username + ' registered'})
                 })
@@ -47,7 +49,7 @@ users.post('/register', (req, res) => {
 })
 
 users.post('/login', (req, res) => {
-    userm.findOne({
+    usersModel.findOne({
         where: {
             username: req.body.username
         }

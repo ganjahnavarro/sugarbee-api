@@ -2,12 +2,16 @@ const Sequelize = require("sequelize")
 const db = require("../database/db")
 
 module.exports = db.sequelize.define(
-    'user',
+    'users',
     {
         identifier: {
             type: Sequelize.INTEGER,
             primaryKey: true,
             autoIncrement: true
+        },
+        created_date: {
+            type: Sequelize.DATEONLY,
+            defaultValue: Sequelize.NOW
         },
         first_name: {
             type: Sequelize.STRING
@@ -20,11 +24,7 @@ module.exports = db.sequelize.define(
         },
         password: {
             type: Sequelize.STRING
-        },
-        created: {
-            type: Sequelize.STRING,
-            defaultValue: Sequelize.NOW
-        },
+        }
     },
     {
         timestamps: false

@@ -1,35 +1,25 @@
-var express = require("express");
-var router=express.Router();
-var mysql = require('mysql');
+const express =  require("express")
+const cors = require("cors")
+const router = express.Router()
+router.use(cors());
 
-var con = mysql.createPool({
-    host: "localhost",
-    user: "root",
-    password: "",
-    database: "sugarbee"
-});
+const usersModel = require("../models/users");
 
 router.post("/", function(req, res, next) {
     const { username, password } = req.body;
-    const queryString = `
-        SELECT username, password
-        FROM user
-        WHERE username='${username}'
-        AND password='${password}'
-    `;
-    try {
-        con.query(queryString, function (err, result, fields) {
-            if (err) throw err;
-
-            if (result.length > 0) {
-                res.status(200).send({ result: "SUCCESS" });
-            } else {
-                res.status(500).send({ result: "FAILED TO LOGIN" });
-            }
-        });
-    } catch(e) {
+    usersModel.findOne({
+        where: { username, password }
+    })
+    .then(user => {
+        if (user) {
+            res.status(200).send({ result: "SUCCESS", userId: user.identifier });
+        } else {
+            res.status(500).send({ result: "USERNAME OR PASSWORD IS INCORRECT" });
+        }
+    })
+    .catch(err => {
         res.status(500).send({ result: "FAILED TO LOGIN" });
-    }
+    })
 });
 
 module.exports=router;

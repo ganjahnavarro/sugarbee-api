@@ -21,3 +21,14 @@ ALTER TABLE orders ADD COLUMN discount_type tinyint(1) NULL;
 
 ------------------------------------------------------------------------------------------------------------------
 ------------------------------------------------------------------------------------------------------------------
+
+ALTER TABLE user RENAME to users;
+ALTER TABLE users ADD COLUMN first_name VARCHAR(50) NOT NULL;
+ALTER TABLE users ADD COLUMN last_name VARCHAR(50) NOT NULL;
+ALTER TABLE users MODIFY COLUMN password VARCHAR(50) NOT NULL;
+ALTER TABLE users ADD COLUMN created_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP();
+
+UPDATE users SET first_name = 'Sugarbee', last_name = 'Admin' WHERE identifier = 1;
+
+------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------
