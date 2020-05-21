@@ -19,7 +19,7 @@ const con = mysql.createPool({
 
 router.get("/", function (req, res) {
     try {
-        con.query("SELECT * FROM `orders` WHERE `date_ordered`=?", [req.body.deadline], function (error, results, fields) {
+        con.query("SELECT * FROM `orders` join `order_details` on `orders`.`identifier` = `order_details`.`order_id`;", function (error, results, fields) {
            if (error) throw error;
            res.status(200).send(JSON.stringify(Helpers.fromUnderScoreToCamelCase(results)));
         });
