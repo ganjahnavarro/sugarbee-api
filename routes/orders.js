@@ -23,7 +23,7 @@ router.get("/", function (req, res) {
     try {
         const sqlQuery = "SELECT o.identifier order_id, oi.identifier identifier, "
                 + " o.*, oi.* FROM `orders` o join `order_details` oi on `o`.`identifier` = `oi`.`order_id`"
-                + " order by oi.identifier desc;";
+                + " order by oi.identifier;";
 
         const onSuccess = (error, results, fields) => {
             if (error) throw error;
@@ -43,8 +43,8 @@ router.get("/", function (req, res) {
                     id: identifier,
                     price: unitPrice,
                     productId,
-                    quantity
-                    orderId,
+                    quantity,
+                    orderId
                 };
 
                 if (existingOrderIndex === -1) {
