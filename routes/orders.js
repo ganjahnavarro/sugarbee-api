@@ -21,8 +21,10 @@ const con = mysql.createPool({
 
 router.get("/", function (req, res) {
     try {
+        const { pickupDate } = req.query;
         const sqlQuery = "SELECT o.identifier order_id, oi.identifier identifier, "
                 + " o.*, oi.* FROM `orders` o join `order_details` oi on `o`.`identifier` = `oi`.`order_id`"
+                + " where DATE_FORMAT(o.pickup_date, '%Y-%m-%d') = ?"
                 + " order by oi.identifier;";
 
         const onSuccess = (error, results, fields) => {
@@ -59,7 +61,7 @@ router.get("/", function (req, res) {
             res.status(200).send(JSON.stringify(orders));
         };
 
-        con.query(sqlQuery, onSuccess);
+        con.query(sqlQuery, [pickupDate], onSuccess);
     } catch(e) {
         res.status(500).send({ result: "FAILED TO RETRIEVE ORDERS" });
     }
