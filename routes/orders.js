@@ -21,12 +21,42 @@ const con = mysql.createPool({
 
 router.get("/", function (req, res) {
     try {
-        const sqlQuery = "SELECT * FROM `orders` join `order_details` on `orders`.`identifier` = `order_details`.`order_id`;";
+        const sqlQuery = "SELECT o.identifier order_id, oi.identifier identifier, "
+                + " o.*, oi.* FROM `orders` o join `order_details` oi on `o`.`identifier` = `oi`.`order_id`"
+                + " order by oi.identifier desc;";
+
         const onSuccess = (error, results, fields) => {
             if (error) throw error;
 
-            results = Helpers.fromUnderScoreToCamelCase(results);
-            res.status(200).send(JSON.stringify(results));
+            const orders = [];
+
+            Helpers.fromUnderScoreToCamelCase(results).forEach(row => {
+                const existingOrderIndex = orders.findIndex(order => order.id === row.orderId);
+
+                const {
+                    orderId, identifier, productId, unitPrice, quantity,
+                    ...order
+                } = row;
+                order.id = orderId;
+
+                const orderDetail = {
+                    id: identifier,
+                    price: unitPrice,
+                    productId,
+                    quantity
+                    orderId,
+                };
+
+                if (existingOrderIndex === -1) {
+                    // Doesn't exist yet
+                    order.orders = [orderDetail];
+                    orders.push(order);
+                } else {
+                    orders[existingOrderIndex].orders.push(orderDetail);
+                }
+            });
+
+            res.status(200).send(JSON.stringify(orders));
         };
 
         con.query(sqlQuery, onSuccess);
@@ -43,11 +73,14 @@ router.post('/', (req, res) => {
 
 
     if (fromExternalForm) {
+        // Default values
         deliveryMethod = "Lalamove";
         paymentOption = "GCASH";
         paymentStatus = 0;
         dateOrdered = new Date();
 
+
+        // Map names to productIds
         orders = orders.map(order => {
             let selectedProduct = null;
 
@@ -68,8 +101,6 @@ router.post('/', (req, res) => {
 
         });
     };
-
-    debugger;
 
     const newRecord = {
         customer_name: customerName,
