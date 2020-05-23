@@ -21,14 +21,18 @@ const con = mysql.createPool({
 
 router.get("/", function (req, res) {
     try {
-        con.query("SELECT * FROM `orders` join `order_details` on `orders`.`identifier` = `order_details`.`order_id`;", function (error, results, fields) {
-           if (error) throw error;
-           res.status(200).send(JSON.stringify(Helpers.fromUnderScoreToCamelCase(results)));
-        });
+        const sqlQuery = "SELECT * FROM `orders` join `order_details` on `orders`.`identifier` = `order_details`.`order_id`;";
+        const onSuccess = (error, results, fields) => {
+            if (error) throw error;
+
+            results = Helpers.fromUnderScoreToCamelCase(results);
+            res.status(200).send(JSON.stringify(results));
+        };
+
+        con.query(sqlQuery, onSuccess);
     } catch(e) {
         res.status(500).send({ result: "FAILED TO RETRIEVE ORDERS" });
     }
-
 });
 
 router.post('/', (req, res) => {

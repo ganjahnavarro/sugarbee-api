@@ -22,7 +22,7 @@ const fromUnderScoreToCamelCase = (object) => {
                 });
                 resultKey = newKey;
             }
-            if (typeof value === "object" && value !== null) {
+            if (typeof value === "object" && value !== null && !(value instanceof Date)) {
                 resultElement[resultKey] = fromUnderScoreToCamelCase(value);
             } else {
                 resultElement[resultKey] = value;
@@ -57,7 +57,7 @@ const fromCamelCaseToUnderScore = (object) => {
             }
             resultKey = resultKey.toLowerCase();
 
-            if (typeof value === "object" && value !== null) {
+            if (typeof value === "object" && value !== null && !(value instanceof Date)) {
                 resultElement[resultKey] = fromCamelCaseToUnderScore(value);
             } else {
                 resultElement[resultKey] = value;
