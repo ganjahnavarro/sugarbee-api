@@ -10,6 +10,8 @@ const Helpers = require("../utils/helpers");
 const ordersModel = require("../models/orders");
 const orderDetailModel = require("../models/order_detail");
 
+const { products } = require("../utils/values/lookups");
+
 const con = mysql.createPool({
     host: "localhost",
     user: "root",
@@ -30,10 +32,40 @@ router.get("/", function (req, res) {
 });
 
 router.post('/', (req, res) => {
-    const { customerName, contactNumber, email, facebook, instagram, deadline,
+    let { customerName, contactNumber, email, facebook, instagram,
         pickupLocation, deliveryMethod, deliveryAddress, paymentStatus, paymentOption,
         request, specialOffer, discountType, discountAmount, dateOrdered, pickupDate,
-        orders } = req.body;
+        orders, fromExternalForm } = req.body;
+
+
+    if (fromExternalForm) {
+        deliveryMethod = "Lalamove";
+        paymentOption = "GCASH";
+        paymentStatus = 0;
+        dateOrdered = new Date();
+
+        orders = orders.map(order => {
+            let selectedProduct = null;
+
+            products.forEach((product) => {
+                product.items.forEach((item) => {
+                    if (item.name === order.name) {
+                        selectedProduct = item;
+                    }
+                });
+            });
+
+            return {
+                ...order,
+                productId: selectedProduct.id,
+                price: selectedProduct.price,
+                quantity: order.quantity
+            }
+
+        });
+    };
+
+    debugger;
 
     const newRecord = {
         customer_name: customerName,
@@ -56,14 +88,14 @@ router.post('/', (req, res) => {
 
     ordersModel.create(newRecord)
         .then((savedRecord) => {
-            orders.map(order => {
+            orders.forEach(order => {
                 orderDetailModel.create({
                     order_id: savedRecord.identifier,
                     unit_price: order.price,
                     product_id: order.productId,
                     quantity: order.quantity
                 });
-            })
+            });
 
             res.status(200).send("ORDER SUCCESSFULLY ADDED");
         })
